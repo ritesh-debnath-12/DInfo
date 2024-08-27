@@ -83,7 +83,7 @@ export function LoginPage() {
             <Button className="w-full">Sign in</Button>
           </CardFooter>
           <div className="text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href="#"
               className="font-medium underline underline-offset-4"

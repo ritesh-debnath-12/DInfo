@@ -34,7 +34,7 @@ export function HomePage() {
             Disaster Relief and Information
           </h1>
           <p className="mt-4 text-lg text-primary-foreground md:text-xl">
-            We're here to help communities in times of crisis. Get the
+            We&apos;re here to help communities in times of crisis. Get the
             information and resources you need.
           </p>
           <Link
