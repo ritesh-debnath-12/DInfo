@@ -14,8 +14,10 @@ import VoteIcon from "../icons/VoteIcon";
 import GiftIcon from "../icons/GiftIcon";
 import InfoIcon from "../icons/InfoIcon";
 import ArrowRightIcon from "../icons/ArrowRightIcon";
+import { getSession } from "@/actions";
 
-export function HomePage() {
+export async function HomePage() {
+  const session = await getSession();
   return (
     <div className="flex min-h-[100dvh] flex-col bg-background">
       <Link
@@ -37,13 +39,24 @@ export function HomePage() {
             We&apos;re here to help communities in times of crisis. Get the
             information and resources you need.
           </p>
-          <Link
-            href="/login"
+          {session.isLoggedIn === false && (
+            <Link
+              href="/login"
+              className="mt-8 inline-flex items-center rounded-md bg-secondary px-6 py-3 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
+              prefetch={false}
+            >
+              Get Involved
+            </Link>
+          )}
+          {session.isLoggedIn && (
+            <Link
+            href="/disaster-map"
             className="mt-8 inline-flex items-center rounded-md bg-secondary px-6 py-3 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
             prefetch={false}
           >
             Get Involved
           </Link>
+          )}
         </div>
       </section>
       <section className="w-full py-16 px-4 md:py-24">
@@ -83,7 +96,8 @@ export function HomePage() {
                 Medical Aid
               </h3>
               <p className="text-center text-muted-foreground">
-                Know where to find medical assistance and resources during a disaster.
+                Know where to find medical assistance and resources during a
+                disaster.
               </p>
             </div>
           </div>
@@ -175,8 +189,8 @@ export function HomePage() {
                 Disaster Response in Wayanad
               </h3>
               <p className="text-muted-foreground">
-                Learn how the disaster in Wayanad, Tamil Nadu has affected the local community.
-
+                Learn how the disaster in Wayanad, Tamil Nadu has affected the
+                local community.
               </p>
               <Link
                 href="#"
