@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import IndiaMap from "@/components/component/map";
 import { GeoJsonObject } from "geojson";
+import dynamic from "next/dynamic";
+
+const IndiaMap = dynamic(() => import("@/components/component/map"), {
+  ssr: false,
+});
 
 export default function DisasterDataPage() {
   const [data, setData] = useState<GeoJsonObject | null>(null);
