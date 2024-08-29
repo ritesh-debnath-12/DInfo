@@ -3,7 +3,9 @@
  * @see https://v0.dev/t/4ZivNT8
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  * Repurposed as a Signup Page
-*/
+ */
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -16,131 +18,342 @@ import {
   SelectLabel,
   SelectItem,
 } from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+
+const userSchema = z
+  .object({
+    firstName: z
+      .string()
+      .min(1, "First Name is required")
+      .max(80, "First Name is too long...bruh"),
+    lastName: z
+      .string()
+      .min(1, "Last Name is required")
+      .max(80, "Last Name is too long...bruh"),
+    username: z
+      .string()
+      .min(1, "Username is required")
+      .max(80, "Username is too long...bruh"),
+    password: z
+      .string()
+      .min(1, "Password is required")
+      .min(8, "Must be at least 8 characters long")
+      .max(32, "Must be less than 32 characters long"),
+    confirmPassword: z
+      .string()
+      .min(1, "Confirm Password is required")
+      .min(8, "Must be at least 8 characters long")
+      .max(32, "Must be less than 32 characters long"),
+    email: z
+      .string()
+      .min(
+        1,
+        "Email is necessary, don't worry we won't sign you up for our newsletter without your permission!"
+      )
+      .email("Invalid email address"),
+    phone: z
+      .string()
+      .min(1, "Phone number is required")
+      .max(
+        13,
+        "Indian phone numbers are 13 digits long(including +91), please check your phone number"
+      ),
+    state: z.string().min(1, "State is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match :(",
+  });
 
 export default function SignupPage() {
+  const router = useRouter();
+  const form = useForm<z.infer<typeof userSchema>>({
+    resolver: zodResolver(userSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+      email: "",
+      phone: "",
+      state: "",
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof userSchema>) => {
+    console.log(values);
+    const response = await fetch("/api/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        username: values.username,
+        email: values.email,
+        password: values.password,
+        phone: values.phone,
+        state: values.state,
+      }),
+    });
+
+    if (response.ok) {
+      router.push("/login");
+    } else {
+      alert("Registration failed X_X, please contact site admin :(");
+    }
+  };
   return (
-    <div className="flex items-center justify-center h-screen">
-      <Card>
-        <CardContent>
-          <div className="space-y-8 p-10">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold">Signup</h2>
-              <p className="text-zinc-500 dark:text-zinc-400">
-                Fill out the form below, and be a part of an amazing initiative.
-              </p>
-            </div>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="flex items-center justify-center h-5/6 max-h-full bg-background">
+          <Card>
+            <CardContent>
+              <div className="space-y-8 p-10">
                 <div className="space-y-2">
-                  <Label htmlFor="first-name">First name</Label>
-                  <Input id="first-name" placeholder="Enter your first name" />
+                  <h2 className="text-3xl font-bold">Signup</h2>
+                  <p className="text-zinc-500 dark:text-zinc-400">
+                    Fill out the form below, and be a part of an amazing
+                    initiative.
+                  </p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="last-name">Last name</Label>
-                  <Input id="last-name" placeholder="Enter your last name" />
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <FormField
+                        control={form.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel htmlFor="first-name">
+                              First name
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Enter your first name"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <FormField
+                        control={form.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel htmlFor="last-name">Last name</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Enter your last name"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel htmlFor="username">Username</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter your username"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <FormField
+                          control={form.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel htmlFor="password">Password</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="password"
+                                  placeholder="Enter your password"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <FormField
+                          control={form.control}
+                          name="confirmPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel htmlFor="confirm-password">
+                                Confirm Password
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="password"
+                                  placeholder="Confirm your password"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel htmlFor="email">Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="Enter your email"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel htmlFor="phone">Phone</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="tel"
+                              placeholder="Enter your phone number"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="state">State: </Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose your state"></SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Central India</SelectLabel>
+                          <SelectItem value="1">Chattisgarh</SelectItem>
+                          <SelectItem value="2">Madhya Pradesh</SelectItem>
+                          <SelectItem value="3">Uttar Pradesh</SelectItem>
+                          <SelectItem value="4">Uttarakhand</SelectItem>
+                        </SelectGroup>
+                        <SelectGroup>
+                          <SelectLabel>Northern India</SelectLabel>
+                          <SelectItem value="5">Himachal Pradesh</SelectItem>
+                          <SelectItem value="6">Haryana</SelectItem>
+                          <SelectItem value="7">Delhi</SelectItem>
+                          <SelectItem value="8">Jammu and Kashmir</SelectItem>
+                          <SelectItem value="9">Punjab</SelectItem>
+                          <SelectItem value="10">Rajasthan</SelectItem>
+                          <SelectItem value="11">Ladakh</SelectItem>
+                        </SelectGroup>
+                        <SelectGroup>
+                          <SelectLabel>North Eastern India</SelectLabel>
+                          <SelectItem value="12">Arunachal Pradesh</SelectItem>
+                          <SelectItem value="13">Assam</SelectItem>
+                          <SelectItem value="14">Manipur</SelectItem>
+                          <SelectItem value="15">Meghalaya</SelectItem>
+                          <SelectItem value="16">Mizoram</SelectItem>
+                          <SelectItem value="17">Nagaland</SelectItem>
+                          <SelectItem value="18">Tripura</SelectItem>
+                          <SelectItem value="19">Sikkim</SelectItem>
+                        </SelectGroup>
+                        <SelectGroup>
+                          <SelectLabel>Eastern India</SelectLabel>
+                          <SelectItem value="20">Bihar</SelectItem>
+                          <SelectItem value="21">Jharkhand</SelectItem>
+                          <SelectItem value="22">Odisha</SelectItem>
+                          <SelectItem value="23">West Bengal</SelectItem>
+                        </SelectGroup>
+                        <SelectGroup>
+                          <SelectLabel>Western India</SelectLabel>
+                          <SelectItem value="24">Goa</SelectItem>
+                          <SelectItem value="25">Gujarat</SelectItem>
+                          <SelectItem value="26">Maharashtra</SelectItem>
+                          <SelectItem value="27">
+                            Dadra and Nagar Haveli
+                          </SelectItem>
+                          <SelectItem value="28">Daman and Diu</SelectItem>
+                        </SelectGroup>
+                        <SelectGroup>
+                          <SelectLabel>Southern India</SelectLabel>
+                          <SelectItem value="29">Andhra Pradesh</SelectItem>
+                          <SelectItem value="30">Karnataka</SelectItem>
+                          <SelectItem value="31">Kerala</SelectItem>
+                          <SelectItem value="32">Pondicherry</SelectItem>
+                          <SelectItem value="33">Tamil Nadu</SelectItem>
+                          <SelectItem value="34">Telengana</SelectItem>
+                        </SelectGroup>
+                        <SelectGroup>
+                          <SelectLabel>Ocean Bois</SelectLabel>
+                          <SelectItem value="35">
+                            Andaman and Nicobar
+                          </SelectItem>
+                          <SelectItem value="36">Lakshadweep</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-5 text-center">
+                    <Button style={{ backgroundColor: "red" }} type="submit">
+                      Submit
+                    </Button>
+                  </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
-                  <Input id="username" placeholder="Enter your username" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    placeholder="Enter your password"
-                    type="password"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" placeholder="Enter your email" type="email" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  placeholder="Enter your phone number"
-                  type="tel"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="state">State: </Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose your state"></SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Central India</SelectLabel>
-                      <SelectItem value="1">Chattisgarh</SelectItem>
-                      <SelectItem value="2">Madhya Pradesh</SelectItem>
-                      <SelectItem value="3">Uttar Pradesh</SelectItem>
-                      <SelectItem value="4">Uttarakhand</SelectItem>
-                    </SelectGroup>
-                    <SelectGroup>
-                      <SelectLabel>Northern India</SelectLabel>
-                      <SelectItem value="5">Himachal Pradesh</SelectItem>
-                      <SelectItem value="6">Haryana</SelectItem>
-                      <SelectItem value="7">Delhi</SelectItem>
-                      <SelectItem value="8">Jammu and Kashmir</SelectItem>
-                      <SelectItem value="9">Punjab</SelectItem>
-                      <SelectItem value="10">Rajasthan</SelectItem>
-                      <SelectItem value="11">Ladakh</SelectItem>
-                    </SelectGroup>
-                    <SelectGroup>
-                      <SelectLabel>North Eastern India</SelectLabel>
-                      <SelectItem value="12">Arunachal Pradesh</SelectItem>
-                      <SelectItem value="13">Assam</SelectItem>
-                      <SelectItem value="14">Manipur</SelectItem>
-                      <SelectItem value="15">Meghalaya</SelectItem>
-                      <SelectItem value="16">Mizoram</SelectItem>
-                      <SelectItem value="17">Nagaland</SelectItem>
-                      <SelectItem value="18">Tripura</SelectItem>
-                      <SelectItem value="19">Sikkim</SelectItem>
-                    </SelectGroup>
-                    <SelectGroup>
-                      <SelectLabel>Eastern India</SelectLabel>
-                      <SelectItem value="20">Bihar</SelectItem>
-                      <SelectItem value="21">Jharkhand</SelectItem>
-                      <SelectItem value="22">Odisha</SelectItem>
-                      <SelectItem value="23">West Bengal</SelectItem>
-                    </SelectGroup>
-                    <SelectGroup>
-                      <SelectLabel>Western India</SelectLabel>
-                      <SelectItem value="24">Goa</SelectItem>
-                      <SelectItem value="25">Gujarat</SelectItem>
-                      <SelectItem value="26">Maharashtra</SelectItem>
-                      <SelectItem value="27">Dadra and Nagar Haveli</SelectItem>
-                      <SelectItem value="28">Daman and Diu</SelectItem>
-                    </SelectGroup>
-                    <SelectGroup>
-                      <SelectLabel>Southern India</SelectLabel>
-                      <SelectItem value="29">Andhra Pradesh</SelectItem>
-                      <SelectItem value="30">Karnataka</SelectItem>
-                      <SelectItem value="31">Kerala</SelectItem>
-                      <SelectItem value="32">Pondicherry</SelectItem>
-                      <SelectItem value="33">Tamil Nadu</SelectItem>
-                      <SelectItem value="34">Telengana</SelectItem>
-                    </SelectGroup>
-                    <SelectGroup>
-                      <SelectLabel>Ocean Bois</SelectLabel>
-                      <SelectItem value="35">Andaman and Nicobar</SelectItem>
-                      <SelectItem value="36">Lakshadweep</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-                <div className="space-y-5 text-center">
-                  <Button style={{backgroundColor: "red"}}>Submit</Button>
-                </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+            </CardContent>
+          </Card>
+        </div>
+      </form>
+    </Form>
   );
 }

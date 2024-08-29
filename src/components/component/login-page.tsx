@@ -4,7 +4,7 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 "use client";
-import { login } from "@/actions";
+import { login } from "@/lib/actions";
 import {
   Card,
   CardHeader,
@@ -19,11 +19,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useFormState } from "react-dom";
+import { Form } from "../ui/form";
+import { useForm } from "react-hook-form";
 
 export function LoginPage() {
   const [state, formAction] = useFormState<any, FormData>(login, undefined);
+  const form = useForm({ mode: "onBlur" }); // will implement form validation later... hehe
   return (
-    <form action={formAction}>
+      <Form {...form}>
+
+      <form action={formAction}>
       <div className="flex items-center justify-center h-screen bg-background">
         <Card className="w-full max-w-md p-10">
           <CardHeader>
@@ -76,7 +81,7 @@ export function LoginPage() {
                 type="password"
                 placeholder="Enter your password"
                 required
-              />
+                />
             </div>
           </CardContent>
           <CardFooter className="flex items-center justify-between">
@@ -88,7 +93,7 @@ export function LoginPage() {
               href="#"
               className="font-medium underline underline-offset-4"
               prefetch={false}
-            >
+              >
               Sign up
             </Link>
           </div>
@@ -96,5 +101,6 @@ export function LoginPage() {
         </Card>
       </div>
     </form>
+        </Form>
   );
 }

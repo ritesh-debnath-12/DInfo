@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import PlaceholderWebIcon from "../icons/PlaceholderWebIcon";
 import MenuIcon from "../icons/MenuIcon";
-import { getSession, logout } from "@/actions";
+import { getSession, logout } from "@/lib/actions";
 
 export default async function Navbar() {
   const session = await getSession();
@@ -46,7 +46,7 @@ export default async function Navbar() {
                 )}
                 {session.isLoggedIn && (
                   <form
-                    action={logout}
+                    action={logout} // this action is not working now...wtf!?!? I am losing my goddamn mind
                     className="text-muted-foreground hover:text-foreground w-full"
                     method="POST"
                   >

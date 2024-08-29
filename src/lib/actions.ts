@@ -1,5 +1,5 @@
 "use server";
-import { sessionOptions, SessionData, defaultSession} from "@/lib";
+import { sessionOptions, SessionData, defaultSession} from "@/lib/lib";
 import { getIronSession } from "iron-session";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -30,6 +30,8 @@ export const login = async(previousState: {error: undefined | string}, formData:
     await session.save();
     redirect("/");
 };
+
+//This piece of shit dies sometimes and I can't figure out why...aaahhh
 export const logout = async() => {
     const session = await getSession();
     await session.destroy();

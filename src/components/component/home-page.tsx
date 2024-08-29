@@ -14,7 +14,7 @@ import VoteIcon from "../icons/VoteIcon";
 import GiftIcon from "../icons/GiftIcon";
 import InfoIcon from "../icons/InfoIcon";
 import ArrowRightIcon from "../icons/ArrowRightIcon";
-import { getSession } from "@/actions";
+import { getSession } from "@/lib/actions";
 
 export async function HomePage() {
   const session = await getSession();
