@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import PlaceholderWebIcon from "../icons/PlaceholderWebIcon";
 import MenuIcon from "../icons/MenuIcon";
@@ -90,7 +91,7 @@ export default async function Navbar() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
-                <img
+                <Image
                   src="/placeholder.svg"
                   width="32"
                   height="32"

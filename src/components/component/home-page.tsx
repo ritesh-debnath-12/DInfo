@@ -14,6 +14,7 @@ import VoteIcon from "../icons/VoteIcon";
 import GiftIcon from "../icons/GiftIcon";
 import InfoIcon from "../icons/InfoIcon";
 import ArrowRightIcon from "../icons/ArrowRightIcon";
+import Image from "next/image";
 import { getSession } from "@/lib/actions";
 
 export async function HomePage() {
@@ -178,7 +179,7 @@ export async function HomePage() {
           </div>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
             <div className="rounded-md border bg-card p-4 shadow-sm">
-              <img
+              <Image
                 src="/placeholder.svg"
                 alt="Update 1"
                 className="mb-4 aspect-[3/2] w-full rounded-md object-cover"
@@ -202,7 +203,7 @@ export async function HomePage() {
               </Link>
             </div>
             <div className="rounded-md border bg-card p-4 shadow-sm">
-              <img
+              <Image
                 src="/placeholder.svg"
                 alt="Update 2"
                 className="mb-4 aspect-[3/2] w-full rounded-md object-cover"
@@ -226,7 +227,7 @@ export async function HomePage() {
               </Link>
             </div>
             <div className="rounded-md border bg-card p-4 shadow-sm">
-              <img
+              <Image
                 src="/placeholder.svg"
                 alt="Update 3"
                 className="mb-4 aspect-[3/2] w-full rounded-md object-cover"
