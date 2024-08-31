@@ -11,10 +11,26 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import PlaceholderWebIcon from "../icons/PlaceholderWebIcon";
 import MenuIcon from "../icons/MenuIcon";
-import { getSession, logout } from "@/lib/actions";
+import ClientNavbar from "./ClientNavbar";
+import { getSession } from "@/lib/actions";
 
 export default async function Navbar() {
   const session = await getSession();
+  const handleLogout = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+    const res = await fetch("/api/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    if (res.ok) {
+      window.location.href = "/login"; // Redirect after successful logout
+    } else {
+      console.error("Logout failed");
+    }
+  };
   console.log(session);
   return (
     <nav className="w-full bg-background border-b sticky top-0">
@@ -36,7 +52,7 @@ export default async function Navbar() {
               <DropdownMenuLabel>Navigation</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                {session.isLoggedIn === false && (
+                {/* {session.isLoggedIn === false && (
                   <Link
                     href="/login"
                     className="text-muted-foreground hover:text-foreground w-full"
@@ -47,15 +63,15 @@ export default async function Navbar() {
                 )}
                 {session.isLoggedIn && (
                   <form
-                    action={logout} // this action is not working now...wtf!?!? I am losing my goddamn mind
+                    onSubmit={handleLogout} // this action is not working now...wtf!?!? I am losing my goddamn mind
                     className="text-muted-foreground hover:text-foreground w-full"
-                    method="POST"
                   >
                     <button type="submit">
                       <p>Logout</p>
                     </button>
                   </form>
-                )}
+                )} */}
+                <ClientNavbar isLoggedIn={session.isLoggedIn} />
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>

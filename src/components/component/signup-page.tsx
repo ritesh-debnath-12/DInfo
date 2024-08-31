@@ -26,6 +26,12 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -93,8 +99,9 @@ export default function SignupPage() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof userSchema>) => {
-    console.log(values);
+  const giveDataToSignupAPI = async (values: z.infer<typeof userSchema>) => {
+    console.log("giveDataToSignupAPI called");
+    // console.log(values);
     const response = await fetch("/api/signup", {
       method: "POST",
       headers: {
@@ -106,20 +113,33 @@ export default function SignupPage() {
         username: values.username,
         email: values.email,
         password: values.password,
+        confirmPassword: values.confirmPassword,
         phone: values.phone,
         state: values.state,
       }),
     });
 
+    console.log("Is response ok?", response.ok);
+    console.log("Response status:", response.status);
+    console.log("Response status text:", response.statusText);
+    const responseBody = await response.json();
+    console.log("Response body:", responseBody);
+
     if (response.ok) {
       router.push("/login");
     } else {
-      alert("Registration failed X_X, please contact site admin :(");
+      console.error("Registration failed X_X, please contact site admin :(");
     }
   };
+
+  const onFormError = (errors: object) => {
+    console.log("onFormError called");
+    console.log(errors);
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(giveDataToSignupAPI, onFormError)}>
         <div className="flex items-center justify-center h-5/6 max-h-full bg-background">
           <Card>
             <CardContent>
@@ -273,75 +293,144 @@ export default function SignupPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="state">State: </Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose your state"></SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Central India</SelectLabel>
-                          <SelectItem value="1">Chattisgarh</SelectItem>
-                          <SelectItem value="2">Madhya Pradesh</SelectItem>
-                          <SelectItem value="3">Uttar Pradesh</SelectItem>
-                          <SelectItem value="4">Uttarakhand</SelectItem>
-                        </SelectGroup>
-                        <SelectGroup>
-                          <SelectLabel>Northern India</SelectLabel>
-                          <SelectItem value="5">Himachal Pradesh</SelectItem>
-                          <SelectItem value="6">Haryana</SelectItem>
-                          <SelectItem value="7">Delhi</SelectItem>
-                          <SelectItem value="8">Jammu and Kashmir</SelectItem>
-                          <SelectItem value="9">Punjab</SelectItem>
-                          <SelectItem value="10">Rajasthan</SelectItem>
-                          <SelectItem value="11">Ladakh</SelectItem>
-                        </SelectGroup>
-                        <SelectGroup>
-                          <SelectLabel>North Eastern India</SelectLabel>
-                          <SelectItem value="12">Arunachal Pradesh</SelectItem>
-                          <SelectItem value="13">Assam</SelectItem>
-                          <SelectItem value="14">Manipur</SelectItem>
-                          <SelectItem value="15">Meghalaya</SelectItem>
-                          <SelectItem value="16">Mizoram</SelectItem>
-                          <SelectItem value="17">Nagaland</SelectItem>
-                          <SelectItem value="18">Tripura</SelectItem>
-                          <SelectItem value="19">Sikkim</SelectItem>
-                        </SelectGroup>
-                        <SelectGroup>
-                          <SelectLabel>Eastern India</SelectLabel>
-                          <SelectItem value="20">Bihar</SelectItem>
-                          <SelectItem value="21">Jharkhand</SelectItem>
-                          <SelectItem value="22">Odisha</SelectItem>
-                          <SelectItem value="23">West Bengal</SelectItem>
-                        </SelectGroup>
-                        <SelectGroup>
-                          <SelectLabel>Western India</SelectLabel>
-                          <SelectItem value="24">Goa</SelectItem>
-                          <SelectItem value="25">Gujarat</SelectItem>
-                          <SelectItem value="26">Maharashtra</SelectItem>
-                          <SelectItem value="27">
-                            Dadra and Nagar Haveli
-                          </SelectItem>
-                          <SelectItem value="28">Daman and Diu</SelectItem>
-                        </SelectGroup>
-                        <SelectGroup>
-                          <SelectLabel>Southern India</SelectLabel>
-                          <SelectItem value="29">Andhra Pradesh</SelectItem>
-                          <SelectItem value="30">Karnataka</SelectItem>
-                          <SelectItem value="31">Kerala</SelectItem>
-                          <SelectItem value="32">Pondicherry</SelectItem>
-                          <SelectItem value="33">Tamil Nadu</SelectItem>
-                          <SelectItem value="34">Telengana</SelectItem>
-                        </SelectGroup>
-                        <SelectGroup>
-                          <SelectLabel>Ocean Bois</SelectLabel>
-                          <SelectItem value="35">
-                            Andaman and Nicobar
-                          </SelectItem>
-                          <SelectItem value="36">Lakshadweep</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                    <FormField
+                      control={form.control}
+                      name="state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <Label>State</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <TooltipContent className="w-full max-w-[90vw] md:max-w-[600px]">
+                                  <p className="text-sm text-muted-foreground">
+                                    If you are from the state of Telengana,
+                                    please select Andhra Pradesh.
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    If you are from the state of Ladakh, please
+                                    select Jammu and Kashmir.
+                                  </p>
+                                </TooltipContent>
+                                <span className="text-sm text-muted-foreground">
+                                  ?
+                                </span>
+                              </TooltipTrigger>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <FormControl>
+                          <Select value={field.value} onValueChange={field.onChange}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Choose your state"></SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Central India</SelectLabel>
+                                <SelectItem value="Chattisgarh">
+                                  Chattisgarh
+                                </SelectItem>
+                                <SelectItem value="Madhya Pradesh">
+                                  Madhya Pradesh
+                                </SelectItem>
+                                <SelectItem value="Uttar Pradesh">
+                                  Uttar Pradesh
+                                </SelectItem>
+                                <SelectItem value="Uttarakhand">
+                                  Uttarakhand
+                                </SelectItem>
+                              </SelectGroup>
+                              <SelectGroup>
+                                <SelectLabel>Northern India</SelectLabel>
+                                <SelectItem value="Himachal Pradesh">
+                                  Himachal Pradesh
+                                </SelectItem>
+                                <SelectItem value="Haryana">Haryana</SelectItem>
+                                <SelectItem value="Delhi">Delhi</SelectItem>
+                                <SelectItem value="J&K">
+                                  Jammu and Kashmir
+                                </SelectItem>
+                                <SelectItem value="Punjab">Punjab</SelectItem>
+                                <SelectItem value="Rajasthan">
+                                  Rajasthan
+                                </SelectItem>
+                                <SelectItem value="Ladakh">Ladakh</SelectItem>
+                              </SelectGroup>
+                              <SelectGroup>
+                                <SelectLabel>North Eastern India</SelectLabel>
+                                <SelectItem value="Arunachal Pradesh">
+                                  Arunachal Pradesh
+                                </SelectItem>
+                                <SelectItem value="Assam">Assam</SelectItem>
+                                <SelectItem value="Manipur">Manipur</SelectItem>
+                                <SelectItem value="Meghalaya">
+                                  Meghalaya
+                                </SelectItem>
+                                <SelectItem value="Mizoram">Mizoram</SelectItem>
+                                <SelectItem value="Nagaland">
+                                  Nagaland
+                                </SelectItem>
+                                <SelectItem value="Tripura">Tripura</SelectItem>
+                                <SelectItem value="Sikkim">Sikkim</SelectItem>
+                              </SelectGroup>
+                              <SelectGroup>
+                                <SelectLabel>Eastern India</SelectLabel>
+                                <SelectItem value="Bihar">Bihar</SelectItem>
+                                <SelectItem value="Jharkhand">
+                                  Jharkhand
+                                </SelectItem>
+                                <SelectItem value="Odisha">Odisha</SelectItem>
+                                <SelectItem value="West Bengal">
+                                  West Bengal
+                                </SelectItem>
+                              </SelectGroup>
+                              <SelectGroup>
+                                <SelectLabel>Western India</SelectLabel>
+                                <SelectItem value="Goa">Goa</SelectItem>
+                                <SelectItem value="Gujrat">Gujarat</SelectItem>
+                                <SelectItem value="Maharashtra">
+                                  Maharashtra
+                                </SelectItem>
+                                <SelectItem value="D&NH">
+                                  Dadra and Nagar Haveli
+                                </SelectItem>
+                                <SelectItem value="D&D">
+                                  Daman and Diu
+                                </SelectItem>
+                              </SelectGroup>
+                              <SelectGroup>
+                                <SelectLabel>Southern India</SelectLabel>
+                                <SelectItem value="Andhra Pradesh">
+                                  Andhra Pradesh
+                                </SelectItem>
+                                <SelectItem value="Karnataka">
+                                  Karnataka
+                                </SelectItem>
+                                <SelectItem value="Kerela">Kerala</SelectItem>
+                                <SelectItem value="Pondicherry">
+                                  Pondicherry
+                                </SelectItem>
+                                <SelectItem value="Tamil Nadu">
+                                  Tamil Nadu
+                                </SelectItem>
+                                {/* Will add Telengana later, when I finish stitching up map */}
+                                {/* <SelectItem value="Telengana">Telengana</SelectItem> */}
+                              </SelectGroup>
+                              <SelectGroup>
+                                <SelectLabel>Ocean Bois</SelectLabel>
+                                <SelectItem value="A&N">
+                                  Andaman and Nicobar
+                                </SelectItem>
+                                <SelectItem value="Lakshadweep">
+                                  Lakshadweep
+                                </SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   <div className="space-y-5 text-center">
                     <Button style={{ backgroundColor: "red" }} type="submit">
