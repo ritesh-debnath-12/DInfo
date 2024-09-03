@@ -31,10 +31,10 @@ export const login = async(previousState: {error: undefined | string}, formData:
     redirect("/");
 };
 
-//This piece of shit dies sometimes and I can't figure out why...aaahhh
+// This piece of shit dies sometimes and I can't figure out why...aaahhh
 export const logout = async() => {
     const session = await getSession();
-    await session.destroy();
+    session.destroy();
     console.log("Session destroyed");
     console.log("Logout successful");
     redirect("/");

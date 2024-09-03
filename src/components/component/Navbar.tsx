@@ -33,7 +33,7 @@ export default async function Navbar() {
   };
   console.log(session);
   return (
-    <nav className="w-full bg-background border-b sticky top-0">
+    <nav className="w-full bg-transparent backdrop-blur-[20px] bg-[linear-gradient(120_deg,rgba(255,255,255,0.3),rgba(0,0,0,0.2))] sticky top-0">
       <div className="container mx-auto max-w-5xl flex items-center justify-between py-4 px-4 md:px-0">
         <Link href="/" className="flex items-center gap-2" prefetch={false}>
           {/* <MountainIcon className="h-6 w-6 text-primary" /> */}
@@ -41,6 +41,64 @@ export default async function Navbar() {
           <span className="ml-2 text-2xl font-bold">DInfo</span>
         </Link>
         <nav className="flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <p className="text-muted-foreground hover:text-foreground cursor-pointer">Disasters</p>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Disasters</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Link
+                    href="/disasters"
+                    className="text-muted-foreground hover:text-foreground"
+                    prefetch={false}
+                  >
+                    <p>Define Disaster</p>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel>Various disasters</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Link
+                    href="/disasters/typhoon-info"
+                    className="text-muted-foreground"
+                    prefetch={false}
+                  >
+                    <p>Typhoons</p>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link
+                    href="/disasters/earthquake-info"
+                    className="text-muted-foreground"
+                    prefetch={false}
+                  >
+                    <p>Earthquakes</p>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link
+                    href="/disasters/flood-info"
+                    className="text-muted-foreground"
+                    prefetch={false}
+                  >
+                    <p>Floods</p>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Link
+              href="/about"
+              className="text-muted-foreground hover:text-foreground"
+              prefetch={false}
+            >
+              <p>About Us</p>
+            </Link>
+          </div>
+          <div className="flex lg:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
@@ -52,26 +110,17 @@ export default async function Navbar() {
               <DropdownMenuLabel>Navigation</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                {/* {session.isLoggedIn === false && (
-                  <Link
-                    href="/login"
-                    className="text-muted-foreground hover:text-foreground w-full"
-                    prefetch={false}
-                  >
-                    <p>Login</p>
-                  </Link>
-                )}
-                {session.isLoggedIn && (
-                  <form
-                    onSubmit={handleLogout} // this action is not working now...wtf!?!? I am losing my goddamn mind
-                    className="text-muted-foreground hover:text-foreground w-full"
-                  >
-                    <button type="submit">
-                      <p>Logout</p>
-                    </button>
-                  </form>
-                )} */}
                 <ClientNavbar isLoggedIn={session.isLoggedIn} />
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Link
+                  href="/disasters"
+                  className="text-muted-foreground hover:text-foreground w-full"
+                  prefetch={false}
+                >
+                  <p>Disasters</p>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
@@ -81,15 +130,6 @@ export default async function Navbar() {
                   prefetch={false}
                 >
                   <p>About Us</p>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link
-                  href="#"
-                  className="text-muted-foreground hover:text-foreground w-full"
-                  prefetch={false}
-                >
-                  <p>Contact Us</p>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -104,6 +144,7 @@ export default async function Navbar() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">

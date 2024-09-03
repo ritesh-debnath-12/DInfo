@@ -24,6 +24,10 @@ const config = {
         heading: ['var(--font-heading)', ...fontFamily.sans],
         body: ['var(--font-body)', ...fontFamily.sans]
       },
+      backgroundColor: {
+        transparent: "transparent"
+      },
+
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
